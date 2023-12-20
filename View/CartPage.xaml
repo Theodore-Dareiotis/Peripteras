@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:Peripteras.Model"
+             xmlns:viewModel="clr-namespace:Peripteras.ViewModel"
+             x:Class="Peripteras.View.CartPage"
+             x:DataType="viewModel:CartViewModel"
+             Title="Επιβεβαίωση Παραγγελίας">
+
+    <Grid RowDefinitions="*, Auto">
+        <CollectionView x:Name="productsCollection"
+                        BackgroundColor="White"
+                        Grid.Row="0"
+                        
+                        ItemsSource="{Binding CartProducts}" 
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="model:Product">
+                    
+                    <Grid ColumnDefinitions="4*,*"
+                          RowDefinitions="*,.02*"
+                              Margin="16,2,10,2">
+                        
+                        <Label Grid.Column="0"
+                                       Text="{Binding Name}"
+                                       HorizontalOptions="Start"
+                                       VerticalOptions="Center"
+                                       TextColor="Black"
+                                       FontAttributes="Bold"
+                                       FontSize="16"/>
+                            <HorizontalStackLayout Grid.Column="1" HorizontalOptions="End">
+                                <Entry Text="{Binding Amount, Mode=TwoWay}" 
+                                       TextColor="Black"
+                                       FontSize="17"
+                                       VerticalTextAlignment="Center"
+                                       HorizontalTextAlignment="Center"
+                                       
+                                       VerticalOptions="Center"
+                                       Keyboard="Numeric"/>
+                                <Button     
+                                        BackgroundColor="White"
+                                        FontAttributes="Bold"
+                                        FontSize="20"
+                                        HeightRequest="40"
+                                        WidthRequest="40"
+                                        HorizontalOptions="End"
+                                        
+                                        Command="{Binding RemoveProductCommand, Source={x:RelativeSource AncestorType={x:Type viewModel:CartViewModel}}}"
+                                        CommandParameter="{Binding .}">
+                                <Button.ImageSource>
+                                    <FontImageSource Glyph="&#xE801;"
+                                                                     FontFamily="Icons"
+                                                                     Size="20"
+                                                                     Color="Gray"/>
+                                </Button.ImageSource>
+                                </Button>
+                            
+                            </HorizontalStackLayout>
+                            <Line BackgroundColor="Gray" 
+                                  Grid.Row="1"
+                                  Grid.ColumnSpan="2"/>
+                        
+                        </Grid>
+                    
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button Grid.Row="1"
+                Text="Export To PDF"
+                TextColor="White"
+                WidthRequest="220"
+                BackgroundColor="#512BD4"
+                Command="{Binding GeneratePDFCommand}"/>
+
+        <ActivityIndicator IsVisible="{Binding IsBusy}"
+           IsRunning="{Binding IsBusy}"
+           HorizontalOptions="FillAndExpand"
+           VerticalOptions="CenterAndExpand"
+           Grid.RowSpan="2"
+           Grid.ColumnSpan="2"/>
+    </Grid>
+</ContentPage>

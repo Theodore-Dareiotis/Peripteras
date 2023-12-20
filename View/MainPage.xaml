@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:model="clr-namespace:Peripteras.Model"
+             xmlns:viewModel="clr-namespace:Peripteras.ViewModel"
+             x:Class="Peripteras.View.MainPage"
+             x:DataType="viewModel:ProductsViewModel"
+             Title="{Binding Title}">
+
+    <Grid RowDefinitions="50, *, Auto"
+          ColumnDefinitions="*,*"
+          RowSpacing="0"
+          BackgroundColor="Transparent">
+        <SearchBar x:Name="searchBar"
+                   Placeholder="Search for product"
+                   Grid.Row="0"
+                   Grid.ColumnSpan="2">
+            <SearchBar.Behaviors>
+                <toolkit:EventToCommandBehavior
+                    EventName="TextChanged"
+                    Command="{Binding SearchCommand, Mode=OneTime}"
+                    CommandParameter="{Binding Text, Source={x:Reference searchBar}}"/>
+            </SearchBar.Behaviors>
+        </SearchBar>
+
+        <CollectionView x:Name="productsCollection"
+                        BackgroundColor="LightGray"
+                        Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        ItemsSource="{Binding FilteredProducts}" 
+                        SelectionMode="None"
+                        VerticalScrollBarVisibility="Always"
+                        
+                        RemainingItemsThreshold="5"
+                        RemainingItemsThresholdReachedCommand="{Binding LoadMoreProductsCommand}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="model:Product">
+                    <Grid Padding="3">
+                        <Frame Padding="10"
+                               CornerRadius="3"
+                               BorderColor="Grey">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer 
+                                    Command="{Binding UpdateCartCommand, Source={x:RelativeSource AncestorType={x:Type viewModel:ProductsViewModel}}}"
+                                    CommandParameter="{Binding .}"/>
+                            </Frame.GestureRecognizers>
+                            <Grid ColumnDefinitions="*, *">
+                                <VerticalStackLayout MaximumWidthRequest="200"
+                                                     HorizontalOptions="Start">
+                                    <Label Text="{Binding Name, Mode=OneTime}"
+                                           FontSize="13"
+                                           FontAttributes="Bold"
+                                           TextColor="Black"/>
+                                    <HorizontalStackLayout Spacing="6">
+                                        <Label Text="{Binding Id, Mode=OneTime}"
+                                               TextColor="DarkSlateGrey"
+                                               VerticalOptions="Center"/>
+                                        <Label Text="Επιλέχθηκε"                                               
+                                               TextColor="#512BD4"
+                                               VerticalOptions="Center"
+                                               IsVisible="{Binding IsInCart}"/>
+                                        <Image VerticalOptions="Center"
+                                               IsVisible="{Binding IsInCart}">
+                                            <Image.Source>
+                                                <FontImageSource FontFamily="Icons"
+                                                                 Glyph="&#xE800;"
+                                                                 Size="10"
+                                                                 Color="#512BD4"/>
+
+                                            </Image.Source>
+                                        </Image>
+
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                               
+                                <HorizontalStackLayout Grid.Column="1"
+                                                       HorizontalOptions="End">
+                                    <Button Text="-"
+                                            TextColor="White"
+                                            BackgroundColor="#512BD4"
+                                            HeightRequest="40"
+                                            WidthRequest="40"
+                                            FontSize="24"
+                                            FontAttributes="Bold"
+                                            Padding="0,0,0,5"
+                                            Command="{Binding DecrementAmountCommand, Source={x:RelativeSource AncestorType={x:Type viewModel:ProductsViewModel}}}"
+                                            CommandParameter="{Binding .}"/>
+                                    <Entry WidthRequest="40"
+                                           HeightRequest="40"                                           
+                                           BackgroundColor="Transparent"
+                                           Text="{Binding Amount, Mode=TwoWay}"
+                                           TextColor="Black"
+                                           FontSize="18"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalTextAlignment="Center"
+                                           Keyboard="Numeric"/>
+                                    <Button Text="+"
+                                            TextColor="White"
+                                            BackgroundColor="#512BD4"
+                                            FontAttributes="Bold"
+                                            FontSize="24"
+                                            HeightRequest="40"
+                                            WidthRequest="40"
+                                            Padding="0,0,0,2"
+                                            Command="{Binding IncrementAmountCommand, Source={x:RelativeSource AncestorType={x:Type viewModel:ProductsViewModel}}}"
+                                            CommandParameter="{Binding .}"/>
+                                    <!--<Stepper x:Name="_stepper"
+                                             Maximum="1000"
+                                             Minimum="0.1"
+                                             HorizontalOptions="Center"
+                                             Value="{Binding Amount, Mode=TwoWay}"/>-->
+                                </HorizontalStackLayout>
+                                
+                            </Grid>
+                        </Frame>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button x:Name="btnExport"
+                Text="Επιβεβαίωση"
+                TextColor="White"
+                BackgroundColor="#512BD4"
+                FontAttributes="Bold"
+                Grid.Column="0"
+                Grid.Row="2"
+                WidthRequest="200"
+                HorizontalOptions="Center"
+                Command="{Binding GoToCartCommand}"
+                />
+        <Button x:Name="btnAddProduct"
+                Text="Πρόσθεσε Νέο"
+                TextColor="White"
+                WidthRequest="200"
+                BackgroundColor="#512BD4"
+                FontAttributes="Bold"
+                Grid.Column="1"
+                Grid.ColumnSpan="1"
+                Grid.Row="2"
+                HorizontalOptions="Center"
+                Command="{Binding GoToAddProductCommand}"/>
+        
+        
+
+        <ActivityIndicator IsVisible="{Binding IsBusy}"
+                   IsRunning="{Binding IsBusy}"
+                   HorizontalOptions="FillAndExpand"
+                   VerticalOptions="CenterAndExpand"
+                   Grid.RowSpan="3"
+                   Grid.ColumnSpan="3"/> 
+    </Grid>
+
+</ContentPage>
