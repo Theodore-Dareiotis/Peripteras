@@ -36,7 +36,6 @@ public partial class ProductsViewModel : BaseViewModel
     private async Task Search(string query)
     {
         if (IsBusy) return;
-
         IsBusy = true;
 
         if (string.IsNullOrWhiteSpace(query))
@@ -50,10 +49,7 @@ public partial class ProductsViewModel : BaseViewModel
         }
         
         FilteredProducts.ReplaceRange(filteredProducts.Take(30));
-
         lastProductIndex = 29;
-
-
 
         IsBusy = false;
     }
@@ -72,14 +68,7 @@ public partial class ProductsViewModel : BaseViewModel
             products = await productService.GetProducts();
             filteredProducts = products;
             
-            FilteredProducts.Clear();
-
-            //int i; lastProductIndex = 0;
-            //for (i = 0;  i < 40 && i < products.Count; i++)
-            //{
-            //    FilteredProducts.Add(products[i]);
-            //}
-
+            FilteredProducts.Clear();          
             FilteredProducts.AddRange(products.Take(30));
 
             lastProductIndex = 29;
@@ -99,18 +88,17 @@ public partial class ProductsViewModel : BaseViewModel
     private void LoadMoreProducts()
     {
         if (IsBusy) return;
-
         IsBusy = true;
+
+        int range = 30;
+        if (lastProductIndex + 30 >= filteredProducts.Count)
+            range = filteredProducts.Count - lastProductIndex - 1;
+
+
+        if (lastProductIndex < filteredProducts.Count)
+            FilteredProducts.AddRange(filteredProducts.GetRange(lastProductIndex, range));
         
-
-        //int i = 0; 
-        //for (i = lastProductIndex; (i < lastProductIndex + 30) && (i < filteredProducts.Count); i++)
-        //{
-        //        FilteredProducts.Add(filteredProducts[i]);
-        //}
-
-        FilteredProducts.AddRange(filteredProducts.GetRange(lastProductIndex, 30));
-
+        
         lastProductIndex += 30;         
         
         IsBusy = false; 
@@ -154,9 +142,8 @@ public partial class ProductsViewModel : BaseViewModel
         }
         else if (product.Amount >= 0.5)
         {
-            
-                product.Amount -= 0.5F;
-                product.Amount = (float)Math.Round(product.Amount, 1);
+            product.Amount -= 0.5F;
+            product.Amount = (float)Math.Round(product.Amount, 1);
         }
     }
 
